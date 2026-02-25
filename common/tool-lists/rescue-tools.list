@@ -1,12 +1,6 @@
-# Rescue and recovery tools (from rescatux/rescapp ecosystem).
-# Format: logical-name | arch-pkg | debian-pkg
-
-chntpw          | chntpw            | chntpw
-extundelete     | extundelete       | extundelete
-gddrescue       | ddrescue          | gddrescue
-myrescue        | --                | myrescue
-testdisk        | testdisk          | testdisk
-gparted         | gparted           | gparted
-gpart           | gpart             | gpart
-x11vnc          | x11vnc            | x11vnc
-efibootmgr      | efibootmgr        | efibootmgr
+# Rescue and data recovery tools.
+# logical-name | arch-pkg | debian-pkg | fedora-pkg | suse-pkg | alpine-pkg | gentoo-pkg
+chntpw          | chntpw            | chntpw            | chntpw            | chntpw            | --                | app-crypt/chntpw
+ddrescue        | ddrescue          | gddrescue         | ddrescue          | ddrescue          | ddrescue          | sys-fs/ddrescue
+gparted         | gparted           | gparted           | gparted           | gparted           | --                | sys-block/gparted
+testdisk        | testdisk          | testdisk          | testdisk          | testdisk          | testdisk          | app-admin/testdisk

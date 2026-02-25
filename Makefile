@@ -1,7 +1,9 @@
-.PHONY: help bootloaders debian arch uki rescatux rescapp clean
+.PHONY: help bootloaders debian arch uki rescatux rescapp adapt clean
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-16s %s\n", $$1, $$2}'
+
+# === Standalone Builders ===
 
 bootloaders: ## Package Debian bootloaders into bootloaders.tar.gz
 	cd bootloaders && bash create-bootloaders
@@ -21,6 +23,14 @@ rescatux: ## Build Rescatux ISO (requires live-build, root)
 rescapp: ## Install rescapp (requires Python3, PyQt5, kdialog)
 	cd tools/rescapp && sudo make install
 
+# === Adapter (layer recovery onto penguins-eggs naked ISOs) ===
+
+adapt: ## Layer recovery tools onto a naked ISO. Usage: make adapt INPUT=<iso> [OUTPUT=<iso>] [RESCAPP=1]
+	@if [ -z "$(INPUT)" ]; then echo "Usage: make adapt INPUT=path/to/naked.iso [OUTPUT=recovery.iso] [RESCAPP=1]"; exit 1; fi
+	sudo ./adapters/adapter.sh --input "$(INPUT)" \
+		$(if $(OUTPUT),--output "$(OUTPUT)") \
+		$(if $(RESCAPP),--with-rescapp)
+
 clean: ## Remove build artifacts
 	rm -rf bootloaders/bootloaders bootloaders/bootloaders.tar.gz
 	rm -rf builders/debian/rootdir builders/debian/*.iso
@@ -28,3 +38,4 @@ clean: ## Remove build artifacts
 	rm -rf builders/uki/mkosi.builddir builders/uki/mkosi.cache
 	rm -rf builders/rescatux/rescatux-release
 	rm -rf recovery-manager/target
+	rm -rf /tmp/penguins-recovery-work

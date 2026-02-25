@@ -1,30 +1,84 @@
 # penguins-recovery
 
 Unified Linux system recovery toolkit. Combines multiple recovery and rescue
-projects into a modular architecture with pluggable builders.
+projects into a modular architecture with pluggable builders and distro-family
+adapters.
 
 ## Structure
 
 ```
 penguins-recovery/
-├── bootloaders/          # Debian bootloader packaging (from penguins-bootloaders)
+├── adapters/                 # Layer recovery onto penguins-eggs naked ISOs
+│   ├── adapter.sh            # Main entry point (auto-detects distro family)
+│   ├── common/               # Shared adapter logic (extract, inject, repack)
+│   ├── debian/               # apt-based installer
+│   ├── fedora/               # dnf/yum-based installer
+│   ├── arch/                 # pacman-based installer
+│   ├── suse/                 # zypper-based installer
+│   ├── alpine/               # apk-based installer
+│   └── gentoo/               # emerge-based installer
+├── bootloaders/              # Debian bootloader packaging (from penguins-bootloaders)
 ├── builders/
-│   ├── debian/           # Debian-based rescue Live CD (from mini-rescue)
-│   ├── arch/             # Arch-based disk rescue image (from platter-engineer)
-│   ├── uki/              # Unified Kernel Image rescue (from rescue-image1)
-│   └── rescatux/         # Rescatux live-build based rescue CD (from rescatux)
+│   ├── debian/               # Debian-based rescue Live CD (from mini-rescue)
+│   ├── arch/                 # Arch-based disk rescue image (from platter-engineer)
+│   ├── uki/                  # Unified Kernel Image rescue (from rescue-image1)
+│   └── rescatux/             # Rescatux live-build based rescue CD (from rescatux)
 ├── tools/
-│   └── rescapp/          # GUI rescue wizard - Qt5/kdialog (from rescapp)
-├── recovery-manager/     # Recovery partition management (from pop-os/upgrade)
+│   └── rescapp/              # GUI rescue wizard - Qt5/kdialog (from rescapp)
+├── recovery-manager/         # Recovery partition management (from pop-os/upgrade)
 ├── common/
-│   ├── tool-lists/       # Shared package definitions across builders
-│   ├── scripts/          # Shared rescue scripts (chroot, GRUB, UEFI, passwords)
-│   └── branding/         # Boot menus, splash screens, MOTD
+│   ├── tool-lists/           # Shared package definitions (all 6 distro families)
+│   ├── scripts/              # Shared rescue scripts (chroot, GRUB, UEFI, passwords)
+│   └── branding/             # Boot menus, splash screens, MOTD
 └── integration/
-    └── eggs-plugin/      # Integration hook for penguins-eggs
+    └── eggs-plugin/          # Integration hook for penguins-eggs
 ```
 
-## Builders
+## Adapters (penguins-eggs naked ISO support)
+
+The adapter system layers recovery tools onto any penguins-eggs naked ISO.
+It auto-detects the distro family from `/etc/os-release` and uses the
+appropriate package manager.
+
+### Supported distro families
+
+| Family | Package Manager | Distros |
+|--------|----------------|---------|
+| Debian | apt | Debian, Ubuntu, Pop!_OS, Linux Mint, LMDE, Devuan, MX, Zorin, elementary |
+| Fedora/RHEL | dnf/yum | Fedora, AlmaLinux, Rocky Linux, CentOS, Nobara |
+| Arch | pacman | Arch, EndeavourOS, Manjaro, BigLinux, Garuda, CachyOS |
+| SUSE | zypper | openSUSE Leap/Tumbleweed/Slowroll, SLES |
+| Alpine | apk | Alpine Linux |
+| Gentoo | emerge | Gentoo, Funtoo, Calculate |
+
+### Usage
+
+```bash
+# Basic: layer recovery tools onto a naked ISO
+sudo make adapt INPUT=naked-debian-bookworm-amd64.iso
+
+# With custom output name
+sudo make adapt INPUT=naked-arch-amd64.iso OUTPUT=recovery-arch.iso
+
+# Include rescapp GUI wizard
+sudo make adapt INPUT=naked-ubuntu-noble-amd64.iso RESCAPP=1
+
+# Direct script usage
+sudo ./adapters/adapter.sh --input naked.iso --output recovery.iso --with-rescapp
+
+# From a URL
+sudo ./adapters/adapter.sh --input https://sourceforge.net/.../naked-debian.iso
+```
+
+### How it works
+
+1. Extracts the ISO and unsquashes the root filesystem
+2. Detects the distro family from `/etc/os-release`
+3. Installs recovery packages via the native package manager
+4. Injects shared scripts, branding, and optionally rescapp
+5. Repackages into a bootable hybrid ISO (BIOS + UEFI)
+
+## Standalone Builders
 
 | Builder | Base | Build Tool | Output | Source |
 |---------|------|------------|--------|--------|
@@ -38,46 +92,24 @@ penguins-recovery/
 ### Rescapp
 
 GUI rescue wizard (Python3/Qt5) with plugin-based rescue tasks:
+GRUB restore, Linux/Windows password reset, UEFI boot management,
+filesystem check, disk partitioning, Windows MBR restore.
 
-- GRUB restore and update
-- Linux/Windows password reset
-- UEFI boot entry management
-- Filesystem check and repair
-- Disk partitioning (GParted, TestDisk, PhotoRec launchers)
-- Windows MBR restore
-
-All GTK dependencies (zenity, GObject mainloop) have been converted to
-Qt equivalents (kdialog, PyQt5 DBus).
-
-Source: [rescatux/rescapp](https://github.com/rescatux/rescapp)
-
-## Recovery Manager
-
-Extracted from [pop-os/upgrade](https://github.com/pop-os/upgrade). Handles:
-- Recovery partition detection and version tracking
-- ISO fetching with checksum verification
-- System repair (fstab, crypttab, packaging)
-
-See [recovery-manager/README.md](recovery-manager/README.md) for status.
+All GTK dependencies converted to Qt (kdialog, PyQt5 DBus).
 
 ## Shared Scripts
 
-- `chroot-rescue.sh` -- Mount and chroot into an installed system (supports LUKS)
+- `chroot-rescue.sh` -- Mount and chroot into an installed system (LUKS support)
 - `detect-disks.sh` -- Display disk layout, LUKS, LVM, and EFI info
 - `grub-restore.sh` -- Restore GRUB bootloader to MBR/EFI
 - `password-reset.sh` -- Reset a Linux user's password from rescue
 - `uefi-repair.sh` -- Check and repair UEFI boot entries
 
-## penguins-eggs Integration
-
-The `integration/eggs-plugin/` directory provides a hook for
-[penguins-eggs](https://github.com/pieroproietti/penguins-eggs) to embed
-recovery tools into generated live ISOs.
-
 ## Building
 
 ```bash
 make help          # Show all targets
+make adapt INPUT=naked.iso  # Layer recovery onto naked ISO
 make bootloaders   # Package Debian bootloaders
 make debian        # Build Debian rescue ISO
 make arch          # Build Arch rescue ISO
@@ -101,3 +133,4 @@ This project unifies:
 - [pop-os/upgrade](https://github.com/pop-os/upgrade)
 - [rescatux/rescatux](https://github.com/rescatux/rescatux)
 - [rescatux/rescapp](https://github.com/rescatux/rescapp)
+- [pieroproietti/penguins-eggs](https://github.com/pieroproietti/penguins-eggs) (naked ISO support via adapters)
