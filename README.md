@@ -63,11 +63,17 @@ sudo make adapt INPUT=naked-arch-amd64.iso OUTPUT=recovery-arch.iso
 # Include rescapp GUI wizard
 sudo make adapt INPUT=naked-ubuntu-noble-amd64.iso RESCAPP=1
 
+# With Plasma GUI profile (minimal, touch, or full)
+sudo make adapt INPUT=naked-debian-bookworm-amd64.iso GUI=minimal
+sudo make adapt INPUT=naked-ubuntu-noble-amd64.iso GUI=touch RESCAPP=1
+sudo make adapt INPUT=naked-arch-amd64.iso GUI=full
+
 # Direct script usage
-sudo ./adapters/adapter.sh --input naked.iso --output recovery.iso --with-rescapp
+sudo ./adapters/adapter.sh --input naked.iso --output recovery.iso --gui minimal
+sudo ./adapters/adapter.sh --input naked.iso --gui touch --with-rescapp
 
 # From a URL
-sudo ./adapters/adapter.sh --input https://sourceforge.net/.../naked-debian.iso
+sudo ./adapters/adapter.sh --input https://sourceforge.net/.../naked-debian.iso --gui full
 ```
 
 ### How it works
@@ -77,6 +83,21 @@ sudo ./adapters/adapter.sh --input https://sourceforge.net/.../naked-debian.iso
 3. Installs recovery packages via the native package manager
 4. Injects shared scripts, branding, and optionally rescapp
 5. Repackages into a bootable hybrid ISO (BIOS + UEFI)
+
+## GUI Profiles
+
+Built on KDE Plasma Nano with optional components from Plasma Mobile and Desktop.
+
+| Profile | Shell | RAM | Boot | Input | Use case |
+|---------|-------|-----|------|-------|----------|
+| `minimal` | plasma-nano | ~200MB | ~5s | Keyboard | Servers, low-RAM, kiosk |
+| `touch` | plasma-nano + mobile | ~400MB | ~10s | Touch + keyboard | Tablets, touchscreens |
+| `full` | plasma-desktop | ~800MB | ~15s | Mouse + keyboard | Desktop/laptop |
+
+The recovery-launcher QML app provides a categorized grid of tasks across
+all profiles, with a terminal menu fallback when no Qt runtime is available.
+
+See [gui/README.md](gui/README.md) for architecture details.
 
 ## Standalone Builders
 
@@ -134,3 +155,6 @@ This project unifies:
 - [rescatux/rescatux](https://github.com/rescatux/rescatux)
 - [rescatux/rescapp](https://github.com/rescatux/rescapp)
 - [pieroproietti/penguins-eggs](https://github.com/pieroproietti/penguins-eggs) (naked ISO support via adapters)
+- [KDE/plasma-nano](https://invent.kde.org/plasma/plasma-nano) (GUI base shell)
+- [KDE/plasma-mobile](https://invent.kde.org/plasma/plasma-mobile) (touch profile components)
+- [KDE/plasma-desktop](https://invent.kde.org/plasma/plasma-desktop) (full profile components)
