@@ -67,17 +67,20 @@ echo ""
 echo "=== Lockout Status ==="
 tpm2_getcap properties-variable 2>/dev/null | grep -E "lockout" || warn "Could not read lockout status."
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 echo ""
 echo "=== Available Actions ==="
 echo "  1) Dump all PCR banks (full)"
 echo "  2) Read a specific NV index"
 echo "  3) Check if a LUKS token references TPM2 (systemd-cryptenroll)"
 echo "  4) Reset TPM lockout counter (requires lockout auth)"
-echo "  5) Exit"
+echo "  5) Audit TPM-sealed boot (diagnose unlock failures)"
+echo "  6) Exit"
 echo ""
 
 while true; do
-    read -rp "Select action [1-5]: " ACTION
+    read -rp "Select action [1-6]: " ACTION
     case "$ACTION" in
         1)
             echo ""
@@ -110,6 +113,13 @@ while true; do
             fi
             ;;
         5)
+            if [ -x "$SCRIPT_DIR/tpm-seal-audit.sh" ]; then
+                "$SCRIPT_DIR/tpm-seal-audit.sh"
+            else
+                error "tpm-seal-audit.sh not found in $SCRIPT_DIR"
+            fi
+            ;;
+        6)
             exit 0
             ;;
         *)
