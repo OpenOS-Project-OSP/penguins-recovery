@@ -88,6 +88,18 @@ build_make() {
     fi
 }
 
+build_meson() {
+    local name="$1" src="$SRC_DIR/$name" out="$OUT_DIR/$name"
+    mkdir -p "$out"
+    info "$name: building (meson)"
+    if [ -f "$src/meson.build" ]; then
+        (cd "$src" && meson setup builddir --prefix="$out" 2>&1 && meson compile -C builddir 2>&1) \
+            || warn "$name: meson build failed (may need dependencies)"
+    else
+        warn "$name: no meson.build found, skipping build"
+    fi
+}
+
 build_edk2() {
     local name="$1" src="$SRC_DIR/$name" out="$OUT_DIR/$name"
     mkdir -p "$out"
@@ -130,6 +142,7 @@ while IFS= read -r line; do
         go)    build_go "$name" ;;
         cargo) build_cargo "$name" ;;
         make)  build_make "$name" ;;
+        meson) build_meson "$name" ;;
         edk2)  build_edk2 "$name" ;;
         cmake)
             info "$name: cmake build -- see project README"

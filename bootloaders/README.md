@@ -6,7 +6,7 @@ bootloaders (from Debian/distro repos) and source-built bootloaders.
 ## System-packaged bootloaders
 
 Collected by `create-bootloaders` from `/usr/lib/`:
-grub, ipxe, ISOLINUX, PXELINUX, shim, syslinux, u-boot, refind.
+grub, ipxe, ISOLINUX, PXELINUX, shim, syslinux, u-boot, refind, systemd-boot.
 
 Cross-distro package names are defined in `common/tool-lists/bootloaders.list`.
 
@@ -30,6 +30,7 @@ Defined in `sources.conf`, built by `build-from-source.sh`:
 | LinuxBoot | [linuxboot/linuxboot](https://github.com/linuxboot/linuxboot) | Make | Linux kernel as firmware (replaces UEFI DXE) |
 | Heads | [linuxboot/heads](https://github.com/linuxboot/heads) | Make | Minimal Linux boot firmware with TPM support |
 | LinuxBootSMM | [9elements/LinuxBootSMM](https://github.com/9elements/LinuxBootSMM) | Make | LinuxBoot with SMM support |
+| systemd-boot | [systemd/systemd](https://github.com/systemd/systemd) | Meson | UEFI boot manager (sd-boot/bootctl) |
 
 ## Usage
 
