@@ -25,11 +25,12 @@ rescapp: ## Install rescapp (requires Python3, PyQt5, kdialog)
 
 # === Adapter (layer recovery onto penguins-eggs naked ISOs) ===
 
-adapt: ## Layer recovery onto naked ISO. Usage: make adapt INPUT=<iso> [OUTPUT=<iso>] [RESCAPP=1] [GUI=minimal|touch|full]
-	@if [ -z "$(INPUT)" ]; then echo "Usage: make adapt INPUT=path/to/naked.iso [OUTPUT=recovery.iso] [RESCAPP=1] [GUI=minimal|touch|full]"; exit 1; fi
+adapt: ## Layer recovery onto naked ISO. Usage: make adapt INPUT=<iso> [OUTPUT=<iso>] [RESCAPP=1] [SECUREBOOT=1] [GUI=minimal|touch|full]
+	@if [ -z "$(INPUT)" ]; then echo "Usage: make adapt INPUT=path/to/naked.iso [OUTPUT=recovery.iso] [RESCAPP=1] [SECUREBOOT=1] [GUI=minimal|touch|full]"; exit 1; fi
 	sudo ./adapters/adapter.sh --input "$(INPUT)" \
 		$(if $(OUTPUT),--output "$(OUTPUT)") \
 		$(if $(RESCAPP),--with-rescapp) \
+		$(if $(SECUREBOOT),--secureboot) \
 		$(if $(GUI),--gui "$(GUI)")
 
 clean: ## Remove build artifacts

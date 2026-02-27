@@ -9,6 +9,7 @@
 #   --input <path|url>    Input naked ISO (local path or HTTP URL)
 #   --output <path>       Output recovery ISO (default: recovery-<input>.iso)
 #   --with-rescapp        Include the rescapp GUI wizard
+#   --secureboot          Set up Secure Boot-compatible boot chain (shim/sbctl)
 #   --gui <profile>       GUI profile: minimal, touch, full, or none (default: none)
 #   --work-dir <path>     Working directory (default: /tmp/penguins-recovery-work)
 #   --keep-work           Don't clean up working directory on completion
@@ -31,6 +32,7 @@ ISO_INPUT=""
 ISO_OUTPUT=""
 WORK_DIR="/tmp/penguins-recovery-work"
 WITH_RESCAPP="false"
+WITH_SECUREBOOT="false"
 GUI_PROFILE="none"
 KEEP_WORK="false"
 
@@ -49,6 +51,7 @@ while [[ $# -gt 0 ]]; do
         --input)      ISO_INPUT="$2"; shift 2 ;;
         --output)     ISO_OUTPUT="$2"; shift 2 ;;
         --with-rescapp) WITH_RESCAPP="true"; shift ;;
+        --secureboot)  WITH_SECUREBOOT="true"; shift ;;
         --gui)        GUI_PROFILE="$2"; shift 2 ;;
         --work-dir)   WORK_DIR="$2"; shift 2 ;;
         --keep-work)  KEEP_WORK="true"; shift ;;
@@ -104,6 +107,7 @@ info "Input:  $ISO_INPUT"
 info "Output: $ISO_OUTPUT"
 info "Work:   $WORK_DIR"
 info "Rescapp: $WITH_RESCAPP"
+info "SecureBoot: $WITH_SECUREBOOT"
 info "GUI:    $GUI_PROFILE"
 info "============================================"
 
@@ -179,20 +183,28 @@ for m in /run /sys /proc /dev/pts /dev; do
 done
 
 # Step 3: Inject recovery tools
-info "Step 3/5: Injecting recovery tools and branding"
+info "Step 3/6: Injecting recovery tools and branding"
 export WITH_RESCAPP
 source "$SCRIPT_DIR/common/inject-recovery.sh"
 
-# Step 4: Install GUI profile
-if [ "$GUI_PROFILE" != "none" ]; then
-    info "Step 4/5: Installing GUI profile ($GUI_PROFILE)"
-    source "$SCRIPT_DIR/common/install-gui.sh"
+# Step 4: Set up Secure Boot chain
+if [ "$WITH_SECUREBOOT" = "true" ]; then
+    info "Step 4/6: Setting up Secure Boot-compatible boot chain"
+    source "$SCRIPT_DIR/common/secureboot-chain.sh"
 else
-    info "Step 4/5: Skipping GUI (--gui not specified)"
+    info "Step 4/6: Skipping Secure Boot (--secureboot not specified)"
 fi
 
-# Step 5: Repack ISO
-info "Step 5/5: Repackaging ISO"
+# Step 5: Install GUI profile
+if [ "$GUI_PROFILE" != "none" ]; then
+    info "Step 5/6: Installing GUI profile ($GUI_PROFILE)"
+    source "$SCRIPT_DIR/common/install-gui.sh"
+else
+    info "Step 5/6: Skipping GUI (--gui not specified)"
+fi
+
+# Step 6: Repack ISO
+info "Step 6/6: Repackaging ISO"
 export ISO_OUTPUT
 source "$SCRIPT_DIR/common/iso-repack.sh"
 
