@@ -180,3 +180,4 @@ This project unifies:
 - [linuxboot/linuxboot](https://github.com/linuxboot/linuxboot) (Linux-as-firmware)
 - [linuxboot/heads](https://github.com/linuxboot/heads) (minimal boot firmware with TPM)
 - [9elements/LinuxBootSMM](https://github.com/9elements/LinuxBootSMM) (LinuxBoot with SMM support)
+- [systemd/systemd](https://github.com/systemd/systemd) (systemd-boot UEFI boot manager)
