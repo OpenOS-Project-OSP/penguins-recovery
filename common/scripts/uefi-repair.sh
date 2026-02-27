@@ -35,16 +35,20 @@ echo ""
 echo "=== EFI System Partitions ==="
 lsblk -o NAME,SIZE,FSTYPE,PARTTYPE,MOUNTPOINT | grep -i "c12a7328\|vfat" || echo "  (none detected)"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 echo ""
 echo "=== Available Actions ==="
 echo "  1) Show current boot order"
 echo "  2) Create new boot entry from EFI file"
 echo "  3) Change boot order"
-echo "  4) Exit"
+echo "  4) Secure Boot key management"
+echo "  5) TPM2 diagnostics"
+echo "  6) Exit"
 echo ""
 
 while true; do
-    read -rp "Select action [1-4]: " ACTION
+    read -rp "Select action [1-6]: " ACTION
     case "$ACTION" in
         1)
             efibootmgr
@@ -64,6 +68,20 @@ while true; do
             info "Boot order updated."
             ;;
         4)
+            if [ -x "$SCRIPT_DIR/secureboot-manage.sh" ]; then
+                "$SCRIPT_DIR/secureboot-manage.sh"
+            else
+                error "secureboot-manage.sh not found in $SCRIPT_DIR"
+            fi
+            ;;
+        5)
+            if [ -x "$SCRIPT_DIR/tpm-inspect.sh" ]; then
+                "$SCRIPT_DIR/tpm-inspect.sh"
+            else
+                error "tpm-inspect.sh not found in $SCRIPT_DIR"
+            fi
+            ;;
+        6)
             exit 0
             ;;
         *)
