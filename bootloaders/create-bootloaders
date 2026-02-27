@@ -32,6 +32,13 @@ if [ -d "/usr/lib/u-boot" ]; then
     cp -r /usr/lib/u-boot "$DEST/"
 fi
 
+# System-installed systemd-boot EFI stubs
+if [ -d "/usr/lib/systemd/boot/efi" ]; then
+    info "Copying /usr/lib/systemd/boot/efi (systemd-boot)"
+    mkdir -p "$DEST/systemd-boot"
+    cp -r /usr/lib/systemd/boot/efi/* "$DEST/systemd-boot/"
+fi
+
 # System-installed refind
 if [ -d "/usr/share/refind" ]; then
     info "Copying /usr/share/refind"
