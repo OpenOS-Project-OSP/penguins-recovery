@@ -17,6 +17,9 @@ arch: ## Build Arch-based rescue ISO (requires mkarchiso)
 uki: ## Build UKI rescue EFI image (requires mkosi, systemd-ukify)
 	cd builders/uki && mkosi build
 
+uki-lite: ## Build lightweight rescue UKI from host kernel (requires binutils, EFI stub)
+	cd builders/uki-lite && sudo ./build.sh --output rescue.efi
+
 rescatux: ## Build Rescatux ISO (requires live-build, root)
 	cd builders/rescatux && sudo ./make-rescatux.sh
 
@@ -37,6 +40,7 @@ clean: ## Remove build artifacts
 	rm -rf builders/debian/rootdir builders/debian/*.iso
 	rm -rf builders/arch/work builders/arch/out
 	rm -rf builders/uki/mkosi.builddir builders/uki/mkosi.cache
+	rm -f builders/uki-lite/rescue.efi
 	rm -rf builders/rescatux/rescatux-release
 	rm -rf recovery-manager/target
 	rm -rf /tmp/penguins-recovery-work
