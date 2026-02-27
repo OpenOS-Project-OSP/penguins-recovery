@@ -213,6 +213,8 @@ manage_sbctl() {
     esac
 }
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # --- Main menu ---
 show_sb_status
 show_enrolled_keys
@@ -223,17 +225,25 @@ echo "  1) Refresh Secure Boot status"
 echo "  2) Verify an EFI binary signature"
 echo "  3) MOK management (mokutil)"
 echo "  4) Secure Boot key management (sbctl)"
-echo "  5) Exit"
+echo "  5) Secure Boot key provisioning (create/enroll PK/KEK/db)"
+echo "  6) Exit"
 echo ""
 
 while true; do
-    read -rp "Select action [1-5]: " ACTION
+    read -rp "Select action [1-6]: " ACTION
     case "$ACTION" in
         1) show_sb_status; show_enrolled_keys ;;
         2) verify_efi_binary ;;
         3) manage_mok ;;
         4) manage_sbctl ;;
-        5) exit 0 ;;
+        5)
+            if [ -x "$SCRIPT_DIR/secureboot-provision.sh" ]; then
+                "$SCRIPT_DIR/secureboot-provision.sh"
+            else
+                error "secureboot-provision.sh not found in $SCRIPT_DIR"
+            fi
+            ;;
+        6) exit 0 ;;
         *) warn "Invalid selection." ;;
     esac
     echo ""
