@@ -3,6 +3,9 @@
 #
 # Collects system-installed bootloaders (Debian packages) and any
 # source-built bootloader artifacts from out/.
+#
+# Upstream reference: https://github.com/pieroproietti/penguins-bootloaders
+# This script extends the upstream version — tracked by sync-bootloaders-upstream.yaml.
 
 set -euo pipefail
 
