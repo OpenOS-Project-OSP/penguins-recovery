@@ -6,9 +6,9 @@ name: Sync bootloaders from upstream
 # Behaviour:
 #   - Checks the upstream HEAD SHA against the last known SHA (stored in
 #     .github/upstream-bootloaders-sha).
-#   - No change → exits silently.
-#   - Clean merge  → commits directly to main.
-#   - Conflict     → opens a GitHub issue with a diff summary; no files changed.
+#   - No change -> exits silently.
+#   - Clean merge  -> commits directly to main.
+#   - Conflict     -> opens a GitHub issue with a diff summary; no files changed.
 
 on:
   schedule:
@@ -79,7 +79,7 @@ jobs:
             2>&1 | tee /tmp/merge-output.txt || true
 
           if git diff --cached --quiet && git diff --quiet; then
-            # Nothing staged and no working-tree changes → already up to date
+            # Nothing staged and no working-tree changes -> already up to date
             echo "result=noop" >> "$GITHUB_OUTPUT"
           elif grep -q "CONFLICT" /tmp/merge-output.txt; then
             echo "result=conflict" >> "$GITHUB_OUTPUT"
@@ -131,7 +131,7 @@ Upstream: https://github.com/pieroproietti/penguins-bootloaders/commit/$SHA"
             --label "upstream-sync" \
             --body "## Upstream sync conflict
 
-Upstream [penguins-bootloaders](https://github.com/pieroproietti/penguins-bootloaders) moved from \`$LAST_SHORT\` → \`$SHORT\` but the merge into \`bootloaders/\` produced conflicts.
+Upstream [penguins-bootloaders](https://github.com/pieroproietti/penguins-bootloaders) moved from \`$LAST_SHORT\` -> \`$SHORT\` but the merge into \`bootloaders/\` produced conflicts.
 
 **No files were changed.** Manual resolution is required.
 
