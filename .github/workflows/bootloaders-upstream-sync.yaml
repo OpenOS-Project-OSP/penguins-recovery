@@ -95,9 +95,7 @@ jobs:
           git add .github/upstream-bootloaders-sha
           git add bootloaders/
 
-          git commit -m "chore(bootloaders): sync upstream penguins-bootloaders @ $SHORT
-
-Upstream: https://github.com/pieroproietti/penguins-bootloaders/commit/$SHA"
+          git commit -m "chore(bootloaders): sync upstream penguins-bootloaders @ ${SHORT}"
 
           git checkout main
           git merge --ff-only upstream-bootloaders-sync
@@ -119,39 +117,43 @@ Upstream: https://github.com/pieroproietti/penguins-bootloaders/commit/$SHA"
             DIFF_BODY=$(head -c 6000 /tmp/conflict-diff.txt)
           fi
 
+          printf '%s\n' \
+            "## Upstream sync conflict" \
+            "" \
+            "Upstream penguins-bootloaders moved from \`${LAST_SHORT}\` to \`${SHORT}\` but the merge into \`bootloaders/\` produced conflicts." \
+            "" \
+            "Upstream repo: https://github.com/pieroproietti/penguins-bootloaders" \
+            "Upstream commit: https://github.com/pieroproietti/penguins-bootloaders/commit/${SHA}" \
+            "" \
+            "**No files were changed.** Manual resolution is required." \
+            "" \
+            "### Steps to resolve" \
+            "" \
+            '```bash' \
+            "git remote add bootloaders-upstream https://github.com/pieroproietti/penguins-bootloaders.git || true" \
+            "git fetch bootloaders-upstream main" \
+            "git merge --allow-unrelated-histories --strategy-option subtree=bootloaders bootloaders-upstream/main" \
+            "# resolve conflicts, then:" \
+            "echo '${SHA}' > .github/upstream-bootloaders-sha" \
+            "git add .github/upstream-bootloaders-sha" \
+            "git commit" \
+            '```' \
+            "" \
+            "### Conflict diff (truncated)" \
+            "" \
+            "<details><summary>Show diff</summary>" \
+            "" \
+            '```diff' \
+            "${DIFF_BODY}" \
+            '```' \
+            "" \
+            "</details>" \
+            > /tmp/issue-body.md
+
           gh issue create \
-            --title "bootloaders upstream sync conflict (upstream @ $SHORT)" \
+            --title "bootloaders upstream sync conflict (upstream @ ${SHORT})" \
             --label "upstream-sync" \
-            --body "## Upstream sync conflict
-
-Upstream [penguins-bootloaders](https://github.com/pieroproietti/penguins-bootloaders) moved from \`$LAST_SHORT\` to \`$SHORT\` but the merge into \`bootloaders/\` produced conflicts.
-
-**No files were changed.** Manual resolution is required.
-
-### Steps to resolve
-
-\`\`\`bash
-git remote add bootloaders-upstream https://github.com/pieroproietti/penguins-bootloaders.git || true
-git fetch bootloaders-upstream main
-git merge --allow-unrelated-histories --strategy-option subtree=bootloaders bootloaders-upstream/main
-# resolve conflicts, then:
-echo '$SHA' > .github/upstream-bootloaders-sha
-git add .github/upstream-bootloaders-sha
-git commit
-\`\`\`
-
-### Conflict diff (truncated)
-
-<details>
-<summary>Show diff</summary>
-
-\`\`\`diff
-$DIFF_BODY
-\`\`\`
-
-</details>
-
-Upstream commit: https://github.com/pieroproietti/penguins-bootloaders/commit/$SHA"
+            --body-file /tmp/issue-body.md
 
           git checkout main
           git branch -D upstream-bootloaders-sync 2>/dev/null || true
@@ -165,7 +167,6 @@ Upstream commit: https://github.com/pieroproietti/penguins-bootloaders/commit/$S
           git checkout main
           echo "$SHA" > .github/upstream-bootloaders-sha
           git add .github/upstream-bootloaders-sha
-          git commit -m "chore(bootloaders): record upstream SHA $SHA (no content change)"
+          git commit -m "chore(bootloaders): record upstream SHA ${SHA} (no content change)"
           git push origin main
           git branch -D upstream-bootloaders-sync 2>/dev/null || true
-
