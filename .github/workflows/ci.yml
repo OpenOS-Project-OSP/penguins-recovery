@@ -17,19 +17,19 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: "./bin"
-          severity: warning
+          severity: error
 
       - name: ShellCheck — adapters
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: "./adapters"
-          severity: warning
+          severity: error
 
       - name: ShellCheck — integration
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: "./integration"
-          severity: warning
+          severity: error
 
   test-cli:
     name: CLI tests
