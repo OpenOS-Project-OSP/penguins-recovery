@@ -22,6 +22,11 @@ jobs:
       - name: Fetch all branches and tags
         run: git fetch --all --tags --prune
 
+      - name: Update mirror repository
+        run: |
+          git remote add mirror "https://github.com/OpenOS-Project-OSP/penguins-recovery.git" || true
+          git fetch mirror
+
       - name: Push mirror to OpenOS-Project-OSP
         env:
           MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
@@ -29,9 +34,6 @@ jobs:
           git config --global credential.helper store
           printf 'https://x-access-token:%s@github.com\n' "$MIRROR_TOKEN" \
             > ~/.git-credentials
-
-          git remote add mirror \
-            "https://github.com/OpenOS-Project-OSP/penguins-recovery.git"
 
           git push mirror --all --force
           git push mirror --tags --force
