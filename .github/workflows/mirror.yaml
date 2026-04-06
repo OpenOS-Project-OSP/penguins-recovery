@@ -42,6 +42,7 @@ jobs:
           printf 'https://x-access-token:%s@github.com\n' "$MIRROR_TOKEN" \
             > ~/.git-credentials
 
+          git fetch mirror  # Ensure we have the latest state from the mirror before pushing
           git push mirror --all --force
           git push mirror --tags --force
 
