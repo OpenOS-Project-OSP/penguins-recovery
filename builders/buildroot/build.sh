@@ -214,7 +214,7 @@ GRUB_EOF
 
   if command -v xorriso &>/dev/null; then
     xorriso -as mkisofs -o "$OUTPUT" \
-      -b boot/grub/i386-pc/eltorito.img 2>/dev/null \
+      -b boot/grub/i386-pc/eltorito.img \
       -no-emul-boot -boot-load-size 4 -boot-info-table \
       "$ISO_WORK" 2>/dev/null || \
     xorriso -as mkisofs -o "$OUTPUT" "$ISO_WORK"
