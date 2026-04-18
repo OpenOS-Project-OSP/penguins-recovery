@@ -44,6 +44,7 @@ NO_ISO="false"
 RED='\033[1;31m'; GRN='\033[1;32m'; YEL='\033[1;33m'; RST='\033[0m'
 info()  { echo -e "${GRN}[buildroot]${RST} $*"; }
 warn()  { echo -e "${YEL}[buildroot]${RST} $*"; }
+# shellcheck disable=SC2261  # echo ... >&2 is a single redirect, not competing
 error() { echo -e "${RED}[buildroot]${RST} $*" >&2; }
 
 while [[ $# -gt 0 ]]; do
