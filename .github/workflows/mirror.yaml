@@ -12,8 +12,6 @@ on:
 jobs:
   mirror:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout full history
         uses: actions/checkout@v4
@@ -24,16 +22,6 @@ jobs:
       - name: Fetch all branches and tags
         run: git fetch --all --tags --prune
 
-      - name: Reset local branch to match remote
-        run: |
-          git checkout main
-          git reset --hard origin/main
-
-      - name: Update mirror repository
-        run: |
-          git remote add mirror "https://gitlab.com/OSPF1896/penguins-recovery.git" || true
-          git fetch mirror
-
       - name: Push mirror to OpenOS-Project-OSP
         env:
           MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
@@ -42,8 +30,9 @@ jobs:
           printf 'https://x-access-token:%s@github.com\n' "$MIRROR_TOKEN" \
             > ~/.git-credentials
 
-          git fetch mirror  # Ensure we have the latest state from the mirror before pushing
-          git fetch origin  # Fetch the latest state from the origin before pushing
+          git remote add mirror \
+            "https://gitlab.com/OSPF1896/penguins-recovery.git"
+
           git push mirror --all --force
           git push mirror --tags --force
 

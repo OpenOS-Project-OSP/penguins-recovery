@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC2145  # upstream GPL code: $@ in string context throughout
 # Rescapp main library: rescapp_lib
 # Copyright (C) 2012,2013,2014,2015,2016,2017,2018,2019,2020 Adrian Gibanel Lopez
 #
@@ -214,7 +213,6 @@ function rtux_Get_Windows_Os_Partitions_payload() {
 
     if $(mount -t auto ${TMP_DEV_PARTITION} ${TMP_MNT_PARTITION} 2> /dev/null) ;
     then
-      # shellcheck disable=SC2144,SC2145  # upstream glob pattern, intentional
       for n_windir in ${TMP_MNT_PARTITION}/* ; do
 	  if [ -e "${n_windir}"\
 /[Ss][Yy][Ss][Tt][Ee][Mm]32\
@@ -891,7 +889,6 @@ function rtux_Get_Sam_Users () {
   if $(mount -t auto ${TMP_DEV_PARTITION} ${TMP_MNT_PARTITION} 2> /dev/null)
     then
   # Find the correct name of the sam file
-      # shellcheck disable=SC2144,SC2145  # upstream glob pattern, intentional
       for n_windir in ${TMP_MNT_PARTITION}/* ; do
 	if [ -e "${n_windir}"\
 /[Ss][Yy][Ss][Tt][Ee][Mm]32\

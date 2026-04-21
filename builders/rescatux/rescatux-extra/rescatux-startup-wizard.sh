@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC2261  # rescatux: > /dev/null 2>&1 &disown pattern
 # Rescatux Sart TightVNC server script
 # Copyright (C) 2019 Adrian Gibanel Lopez
 #

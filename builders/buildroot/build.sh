@@ -44,7 +44,6 @@ NO_ISO="false"
 RED='\033[1;31m'; GRN='\033[1;32m'; YEL='\033[1;33m'; RST='\033[0m'
 info()  { echo -e "${GRN}[buildroot]${RST} $*"; }
 warn()  { echo -e "${YEL}[buildroot]${RST} $*"; }
-# shellcheck disable=SC2261  # echo ... >&2 is a single redirect, not competing
 error() { echo -e "${RED}[buildroot]${RST} $*" >&2; }
 
 while [[ $# -gt 0 ]]; do
@@ -214,7 +213,7 @@ GRUB_EOF
 
   if command -v xorriso &>/dev/null; then
     xorriso -as mkisofs -o "$OUTPUT" \
-      -b boot/grub/i386-pc/eltorito.img \
+      -b boot/grub/i386-pc/eltorito.img 2>/dev/null \
       -no-emul-boot -boot-load-size 4 -boot-info-table \
       "$ISO_WORK" 2>/dev/null || \
     xorriso -as mkisofs -o "$OUTPUT" "$ISO_WORK"
