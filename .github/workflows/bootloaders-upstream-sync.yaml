@@ -1,6 +1,6 @@
 name: Sync bootloaders from upstream
 
-# Tracks: https://github.com/pieroproietti/penguins-bootloaders
+# Tracks: https://github.com/Interested-Deving-1896/penguins-bootloaders
 # Scope:  bootloaders/ directory in this repo
 #
 # Behaviour:
@@ -32,7 +32,7 @@ jobs:
       - name: Fetch upstream penguins-bootloaders
         run: |
           git remote add bootloaders-upstream \
-            https://github.com/pieroproietti/penguins-bootloaders.git
+            https://github.com/Interested-Deving-1896/penguins-bootloaders.git
           git fetch bootloaders-upstream main
 
       - name: Check for upstream changes
@@ -122,15 +122,15 @@ jobs:
             "" \
             "Upstream penguins-bootloaders moved from \`${LAST_SHORT}\` to \`${SHORT}\` but the merge into \`bootloaders/\` produced conflicts." \
             "" \
-            "Upstream repo: https://github.com/pieroproietti/penguins-bootloaders" \
-            "Upstream commit: https://github.com/pieroproietti/penguins-bootloaders/commit/${SHA}" \
+            "Upstream repo: https://github.com/Interested-Deving-1896/penguins-bootloaders" \
+            "Upstream commit: https://github.com/Interested-Deving-1896/penguins-bootloaders/commit/${SHA}" \
             "" \
             "**No files were changed.** Manual resolution is required." \
             "" \
             "### Steps to resolve" \
             "" \
             '```bash' \
-            "git remote add bootloaders-upstream https://github.com/pieroproietti/penguins-bootloaders.git || true" \
+            "git remote add bootloaders-upstream https://github.com/Interested-Deving-1896/penguins-bootloaders.git || true" \
             "git fetch bootloaders-upstream main" \
             "git merge --allow-unrelated-histories --strategy-option subtree=bootloaders bootloaders-upstream/main" \
             "# resolve conflicts, then:" \
