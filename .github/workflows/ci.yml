@@ -14,22 +14,22 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: ShellCheck — bin
-        uses: ludeeus/action-shellcheck@master
+        uses: ludeeus/action-shellcheck@2.1.6
         with:
           scandir: "./bin"
-          severity: warning
+          severity: error
 
       - name: ShellCheck — adapters
-        uses: ludeeus/action-shellcheck@master
+        uses: ludeeus/action-shellcheck@2.1.6
         with:
           scandir: "./adapters"
-          severity: warning
+          severity: error
 
       - name: ShellCheck — integration
-        uses: ludeeus/action-shellcheck@master
+        uses: ludeeus/action-shellcheck@2.1.6
         with:
           scandir: "./integration"
-          severity: warning
+          severity: error
 
   test-cli:
     name: CLI tests
