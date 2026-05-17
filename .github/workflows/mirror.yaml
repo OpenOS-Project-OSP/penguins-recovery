@@ -1,11 +1,10 @@
-name: Mirror to OpenOS-Project-OSP
+name: Mirror to GitLab
 
 on:
   push:
     branches: ["**"]
     tags: ["**"]
   schedule:
-    # Hourly sync to catch any missed push events
     - cron: "0 * * * *"
   workflow_dispatch:
 
@@ -22,17 +21,14 @@ jobs:
       - name: Fetch all branches and tags
         run: git fetch --all --tags --prune
 
-      - name: Push mirror to OpenOS-Project-OSP
+      - name: Push mirror to GitLab
         env:
           MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
         run: |
           git config --global credential.helper store
-          printf 'https://oauth2:%s@gitlab.com\n' "$MIRROR_TOKEN" \
-            > ~/.git-credentials
+          printf https://oauth2:%s@gitlab.comn "$MIRROR_TOKEN" > ~/.git-credentials
 
-          git remote add mirror \
-            "https://gitlab.com/OSPF1896/penguins-recovery.git"
-
+          git remote add mirror "https://gitlab.com/OSPF1896/penguins-recovery.git"
           git push mirror --all --force
           git push mirror --tags --force
 
