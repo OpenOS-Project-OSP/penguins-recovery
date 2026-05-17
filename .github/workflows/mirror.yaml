@@ -25,11 +25,6 @@ jobs:
         env:
           MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
         run: |
-          git config --global credential.helper store
-          printf https://oauth2:%s@gitlab.comn "$MIRROR_TOKEN" > ~/.git-credentials
-
-          git remote add mirror "https://gitlab.com/OSPF1896/penguins-recovery.git"
+          git remote add mirror             "https://oauth2:${MIRROR_TOKEN}@gitlab.com/OSPF1896/penguins-recovery.git"
           git push mirror --all --force
           git push mirror --tags --force
-
-          rm -f ~/.git-credentials
